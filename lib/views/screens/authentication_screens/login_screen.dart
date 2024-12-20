@@ -3,18 +3,34 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
 import 'package:market_sphere/controllers/authentication/auth_controller.dart';
+import 'package:market_sphere/views/screens/authentication_screens/register_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  late String email, fullName, password;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _LoginScreenState extends State<LoginScreen> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthController _authController = AuthController();
+  late String email, password;
+  bool isLoading = false;
+
+  loginUser() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _authController
+        .signInUsers(context: context, email: email, password: password)
+        .whenComplete(() {
+      _formKey.currentState!.reset();
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               _header(),
               const SizedBox(
-                height: 20,
+                height: 18,
               ),
               _buildTextFields(),
               const SizedBox(
@@ -52,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       children: [
         const Text(
-          "Register an account",
+          "Login to your account",
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 0.2),
         ),
@@ -63,9 +79,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(
           height: 25,
         ),
-        SvgPicture.asset("assets/images/signup_illustration.svg",
-            width: MediaQuery.sizeOf(context).width * 0.2,
-            height: MediaQuery.sizeOf(context).height * 0.2)
+        SvgPicture.asset("assets/images/login_illustration.svg",
+            width: MediaQuery.sizeOf(context).width * 0.3,
+            height: MediaQuery.sizeOf(context).height * 0.3)
       ],
     );
   }
@@ -78,30 +94,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            TextFormField(
-              onChanged: (value) {
-                fullName = value;
-              },
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Enter your Full Name';
-                } else {
-                  return null;
-                }
-              },
-              decoration: InputDecoration(
-                  labelText: "Full Name",
-                  filled: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50)),
-                  fillColor: Colors.grey[200],
-                  prefixIcon: const Icon(IconlyBold.user_2),
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
             TextFormField(
               onChanged: (value) {
                 email = value;
@@ -160,13 +152,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return InkWell(
       onTap: () async {
         if (_formKey.currentState!.validate()) {
-          await _authController.signUpUsers(
-              context: context,
-              email: email,
-              fullName: fullName,
-              password: password);
+          loginUser();
         } else {
-          debugPrint("successfull");
+          debugPrint('failed');
         }
       },
       child: Container(
@@ -176,13 +164,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
             borderRadius: BorderRadius.circular(5),
             gradient: const LinearGradient(
                 colors: [Color(0xFF63A0FF), Color(0xFF102DE1)])),
-        child: Center(
-          child: Text(
-            "Register",
-            style: GoogleFonts.lato(
-                fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white),
-          ),
-        ),
+        child: isLoading
+            ? const Center(
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
+              )
+            : Center(
+                child: Text(
+                  "Login",
+                  style: GoogleFonts.lato(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      color: Colors.white),
+                ),
+              ),
       ),
     );
   }
@@ -192,15 +192,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Already have an account? ',
-            style: GoogleFonts.roboto(fontSize: 14)),
+        Text('Need an account? ', style: GoogleFonts.roboto(fontSize: 14)),
         InkWell(
           onTap: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => RegisterScreen()));
           },
           child: Text(
-            'Login',
+            'Register Here',
             style: GoogleFonts.roboto(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,

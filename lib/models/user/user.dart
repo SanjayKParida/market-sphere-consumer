@@ -8,15 +8,18 @@ class User {
   final String city;
   final String locality;
   final String password;
+  final String token;
 
-  User(
-      {required this.id,
-      required this.fullName,
-      required this.email,
-      required this.state,
-      required this.city,
-      required this.locality,
-      required this.password});
+  User({
+    required this.id,
+    required this.fullName,
+    required this.email,
+    required this.state,
+    required this.city,
+    required this.locality,
+    required this.password,
+    required this.token,
+  });
 
   //SERIALIZATION: CONVERT USER MODEL TO MAP
   Map<String, dynamic> toMap() {
@@ -28,6 +31,7 @@ class User {
       "city": city,
       "locality": locality,
       "password": password,
+      "token": token
     };
   }
 
@@ -43,7 +47,8 @@ class User {
         state: map['state'] as String? ?? "",
         city: map['city'] as String? ?? "",
         locality: map['locality'] as String? ?? "",
-        password: map['password'] as String? ?? "");
+        password: map['password'] as String? ?? "",
+        token: map['token'] as String? ?? "");
   }
 
   //DESERIALIZATION: CONVERT JSON STRING TO MAP
