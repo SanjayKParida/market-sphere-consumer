@@ -1,16 +1,43 @@
-# market_sphere
+# Market Sphere - Consumer
 
-A new Flutter project.
+- Market Sphere App is a consumer-facing e-commerce mobile application built using Flutter. It offers a seamless shopping experience with intuitive UI/UX and robust features.
+- Developed under the **Market Sphere Project**.
 
-## Getting Started
+## ⚡️ Features
+- Browse products by categories
+- Search and filter options
+- Add to cart and wishlist
+- Secure checkout process
+- Order history and tracking
+- User authentication and profile management
+- Push notifications for offers and updates
 
-This project is a starting point for a Flutter application.
+## 👩‍💻 Technologies Used
+- **Flutter**: For cross-platform UI/UX
+- **Dart**: Programming language
+- **REST APIs**: Backend integration
 
-A few resources to get you started if this is your first Flutter project:
+## ⏳ Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Clone the repository:
+   ```
+   git clone https://github.com/SanjayKParida/market-sphere.git
+   ```
+2. Navigate to the project directory:
+   ```
+   cd market-sphere
+   ```
+3. Install dependencies:
+   ```
+   flutter pub get
+   ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+5. Run the app:
+   ```
+   flutter run
+   ```
+
+## 🌍 Contributions
+
+Contributions are welcome! Fork the repository and submit a pull request with your changes.
+
