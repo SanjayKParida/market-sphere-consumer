@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 
-class HeaderWidget extends StatelessWidget {
-  final String hintText;
-  const HeaderWidget({super.key, required this.hintText});
+class CategoryHeaderWidget extends StatelessWidget {
+  const CategoryHeaderWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +19,26 @@ class HeaderWidget extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           Positioned(
-              left: size.width * 0.03,
+              left: 0.05,
               top: size.height * 0.06,
-              child: SizedBox(
-                width: 250,
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    IconlyLight.arrow_left_2,
+                    color: Colors.white,
+                  ))),
+          Positioned(
+              left: size.width * 0.15,
+              top: size.height * 0.06,
+              child: const SizedBox(
+                width: 200,
                 height: 50,
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: hintText,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                    hintText: "hintText",
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
                     filled: true,
                   ),
                 ),

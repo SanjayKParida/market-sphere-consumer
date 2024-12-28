@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:market_sphere/core/constants/constants.dart';
-import 'package:market_sphere/models/user/user.dart';
+import 'package:market_sphere/models/user/user_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:market_sphere/provider/user_provider.dart';
 import 'package:market_sphere/services/api_service.dart';
-import 'package:market_sphere/services/snackbar_service.dart';
 import 'package:market_sphere/views/screens/authentication_screens/login_screen.dart';
 import 'package:market_sphere/views/screens/main_screen/main_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final providerContainer = ProviderContainer();
 
 class AuthController {
   Future<void> signUpUsers(
@@ -16,7 +20,7 @@ class AuthController {
       required String fullName,
       required String password}) async {
     try {
-      User user = User(
+      UserModel user = UserModel(
           id: '',
           fullName: fullName,
           email: email,
@@ -34,7 +38,25 @@ class AuthController {
       manageHttpResponse(
           response: response,
           context: context,
-          onSuccess: () {
+          onSuccess: () async {
+            //ACCESS SHARED PREFERENCES FOR TOKEN AND USER DATA STORAGE
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            //EXTRACTS THE AUTHENTICATION TOKEN FROM THE BODY
+            String token = json.decode(response.body)['token'];
+
+            //STORE THE AUTHENTICATION TOKEN SECURELY IN SHARED PREFERENCES
+            await prefs.setString('auth_token', token);
+
+            //ENCODE THE USER DATA RECEIVED FROM THE BACKEND AS JSON
+            final userJson = jsonEncode(jsonDecode(response.body)['user']);
+
+            //UPDATE THE APPLICATION STATE WITH THE USER DATA USING RIVERPOD
+            providerContainer.read(userProvider.notifier).setUser(userJson);
+
+            //STORE THE DATA IN SHARED PREFERENCES FOR FUTURE USE
+            await prefs.setString('user', userJson);
+
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()));
             debugPrint("Success");

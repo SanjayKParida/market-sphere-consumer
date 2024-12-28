@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class User {
+class UserModel {
   final String id;
   final String fullName;
   final String email;
@@ -10,7 +10,7 @@ class User {
   final String password;
   final String token;
 
-  User({
+  UserModel({
     required this.id,
     required this.fullName,
     required this.email,
@@ -39,8 +39,8 @@ class User {
   String toJson() => jsonEncode(toMap());
 
   //DESERIALIZATION: CONVERT MAP TO USER MODEL
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
         id: map['_id'] as String? ?? "",
         fullName: map['fullName'] as String? ?? "",
         email: map['email'] as String? ?? "",
@@ -52,6 +52,6 @@ class User {
   }
 
   //DESERIALIZATION: CONVERT JSON STRING TO MAP
-  factory User.fromJson(String source) =>
-      User.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }

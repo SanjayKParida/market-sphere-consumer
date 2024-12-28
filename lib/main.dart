@@ -1,26 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:market_sphere/provider/user_provider.dart';
 import 'package:market_sphere/views/screens/authentication_screens/login_screen.dart';
-import 'package:market_sphere/views/screens/authentication_screens/register_screen.dart';
 import 'package:market_sphere/views/screens/main_screen/main_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const MyApp());
+  //RUN THE FLUTTER APP WRAPPED IN A PROVIDER SCOPE
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+//ROOT WIDGET OF THE APPLICATION WILL BE A CONSUMER WIDGET
+//IN ORDER TO CONSUME STATE CHANGE
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  //METHOD TO CHECK THE TOKEN AND SET THE USER DATA IF AVAILABLE
+  Future<void> _checkTokenAndSetUser(WidgetRef ref) async {
+    //CREATING AN INSTANCE OF SHARED PREFERENCES FOR LOCAL DATA STORAGE
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    //RETRIEVE THE AUTH TOKEN AND USER DATA STORED LOCALLY
+    String? token = prefs.getString('auth_token');
+    String? userJson = prefs.getString('user');
+
+    //IF BOTH TOKEN AND USER DATA AVAILABLE, THEN UPDATE THE STATE
+    if (token != null && userJson != null) {
+      ref.read(userProvider.notifier).setUser(userJson);
+      print(token);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Market Sphere',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: MainScreen(),
+      home: FutureBuilder(
+        future: _checkTokenAndSetUser(ref),
+        builder: (context, snapshots) {
+          if (snapshots.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final user = ref.watch(userProvider);
+          return user != null ? const MainScreen() : const LoginScreen();
+        },
+      ),
     );
   }
 }

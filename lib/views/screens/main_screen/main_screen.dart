@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:market_sphere/views/screens/navigation_screens/cart_screen/cart_screen.dart';
-import 'package:market_sphere/views/screens/navigation_screens/favorites_screen/favorites_screen.dart';
+import 'package:market_sphere/views/screens/navigation_screens/category_screen/category_screen.dart';
 import 'package:market_sphere/views/screens/navigation_screens/home_screen/home_screen.dart';
 import 'package:market_sphere/views/screens/navigation_screens/profile_screen/user_screen.dart';
 import 'package:market_sphere/views/screens/navigation_screens/stores_screen/stores_screen.dart';
@@ -15,9 +15,9 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _pageIndex = 0;
-  final List<Widget> pages = [
+  final List<Widget> pages = const [
     HomeScreen(),
-    FavoritesScreen(),
+    CategoryScreen(),
     StoresScreen(),
     CartScreen(),
     UserScreen()
@@ -43,31 +43,31 @@ class _MainScreenState extends State<MainScreen> {
         },
         showUnselectedLabels: true,
         unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.deepPurpleAccent,
+        selectedItemColor: const Color(0xff00059F),
         items: const [
           BottomNavigationBarItem(
               icon: Icon(
-                IconlyBold.home,
+                IconlyLight.home,
               ),
               label: 'Home'),
           BottomNavigationBarItem(
               icon: Icon(
-                IconlyBold.heart,
+                IconlyLight.category,
               ),
-              label: 'Favorites'),
+              label: 'Categories'),
           BottomNavigationBarItem(
               icon: Icon(
-                IconlyBold.work,
+                IconlyLight.work,
               ),
               label: 'Stores'),
           BottomNavigationBarItem(
               icon: Icon(
-                IconlyBold.buy,
+                IconlyLight.buy,
               ),
               label: 'Cart'),
           BottomNavigationBarItem(
               icon: Icon(
-                IconlyBold.user_2,
+                IconlyLight.user_1,
               ),
               label: 'User')
         ]);
