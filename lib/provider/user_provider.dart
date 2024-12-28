@@ -18,6 +18,12 @@ class UserProvider extends StateNotifier<UserModel?> {
   void setUser(String userJson) {
     state = UserModel.fromJson(userJson);
   }
+
+  //METHOD TO SIGN OUT USER
+  void signOut(){
+    state = null;
+  }
+
 }
 
 final userProvider = StateNotifierProvider<UserProvider, UserModel?>(

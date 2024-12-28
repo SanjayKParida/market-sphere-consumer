@@ -27,7 +27,8 @@ class MyApp extends ConsumerWidget {
     //IF BOTH TOKEN AND USER DATA AVAILABLE, THEN UPDATE THE STATE
     if (token != null && userJson != null) {
       ref.read(userProvider.notifier).setUser(userJson);
-      print(token);
+    } else {
+      ref.read(userProvider.notifier).signOut();
     }
   }
 

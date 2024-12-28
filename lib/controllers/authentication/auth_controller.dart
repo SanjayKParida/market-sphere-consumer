@@ -7,6 +7,7 @@ import 'package:market_sphere/models/user/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:market_sphere/provider/user_provider.dart';
 import 'package:market_sphere/services/api_service.dart';
+import 'package:market_sphere/services/snackbar_service.dart';
 import 'package:market_sphere/views/screens/authentication_screens/login_screen.dart';
 import 'package:market_sphere/views/screens/main_screen/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final providerContainer = ProviderContainer();
 
 class AuthController {
+  //SINGUP USERS
   Future<void> signUpUsers(
       {required BuildContext context,
       required String email,
@@ -67,6 +69,7 @@ class AuthController {
     }
   }
 
+  //SIGNIN USERS
   Future<void> signInUsers(
       {required BuildContext context,
       required String email,
@@ -90,6 +93,30 @@ class AuthController {
           });
     } catch (e) {
       debugPrint("ERROR: $e");
+    }
+  }
+
+  //SIGNOUT USERS
+  Future<void> signOutUser({required context}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      //CLEAR THE TOKEN FROM THE SHARED PREFERENCES
+      prefs.remove('auth_token');
+      //CLEAR THE USER FROM THE SHARED PREFERENCES
+      prefs.remove('user');
+
+      //CLEAR THE USER STATE
+      providerContainer.read(userProvider.notifier).signOut();
+
+      //NAVIGATE BACK TO THE LOGIN SCREEN
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false);
+
+      showSnackbar(context, "Signed Out!");
+    } catch (e) {
+      showSnackbar(context, "Error Signing Out: $e");
     }
   }
 }

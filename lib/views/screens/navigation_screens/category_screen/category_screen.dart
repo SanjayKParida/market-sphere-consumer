@@ -165,20 +165,28 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                         height: 50,
                                         width: 50,
                                         decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image: NetworkImage(
-                                                    subcategory.image),
-                                                fit: BoxFit.cover),
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                                BorderRadius.circular(40),
                                             color: Colors.grey.shade200),
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Image.network(
+                                                subcategory.image),
+                                          ),
+                                        ),
                                       ),
                                       const SizedBox(
                                         height: 2,
                                       ),
                                       Center(
-                                        child:
-                                            Text(subcategory.subCategoryName),
+                                        child: Text(
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                          ),
+                                          subcategory.subCategoryName,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       )
                                     ],
                                   ),

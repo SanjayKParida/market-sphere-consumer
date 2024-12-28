@@ -3,7 +3,7 @@ import 'package:iconly/iconly.dart';
 import 'package:market_sphere/views/screens/navigation_screens/cart_screen/cart_screen.dart';
 import 'package:market_sphere/views/screens/navigation_screens/category_screen/category_screen.dart';
 import 'package:market_sphere/views/screens/navigation_screens/home_screen/home_screen.dart';
-import 'package:market_sphere/views/screens/navigation_screens/profile_screen/user_screen.dart';
+import 'package:market_sphere/views/screens/navigation_screens/profile_screen/profile_screen.dart';
 import 'package:market_sphere/views/screens/navigation_screens/stores_screen/stores_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,12 +15,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _pageIndex = 0;
-  final List<Widget> pages = const [
-    HomeScreen(),
-    CategoryScreen(),
-    StoresScreen(),
-    CartScreen(),
-    UserScreen()
+  final List<Widget> pages = [
+    const HomeScreen(),
+    const CategoryScreen(),
+    const StoresScreen(),
+    const CartScreen(),
+    ProfileScreen()
   ];
 
   @override
