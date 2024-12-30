@@ -1,4 +1,6 @@
 # Market Sphere - Consumer
+[![Dart](https://img.shields.io/badge/Dart-%230175C2.svg?logo=dart&logoColor=white)](#)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=fff)](#)
 
 - Market Sphere App is a consumer-facing e-commerce mobile application built using Flutter. It offers a seamless shopping experience with intuitive UI/UX and robust features.
 - Developed under the **Market Sphere Project**.
