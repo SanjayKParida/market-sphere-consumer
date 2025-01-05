@@ -34,7 +34,7 @@ class TextWidget extends StatelessWidget {
             subtitle,
             style: GoogleFonts.quicksand(
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.bold,
               color: Colors.blue,
             ),
           )

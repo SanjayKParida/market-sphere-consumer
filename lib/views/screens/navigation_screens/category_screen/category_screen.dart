@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_sphere/controllers/subcategory/subcategory_controller.dart';
 import 'package:market_sphere/models/subcategory/subcategory_model.dart';
-import 'package:market_sphere/views/widgets/header_widget.dart';
+import 'package:market_sphere/views/widgets/custom_app_bar/beautiful_app_bar_widget.dart';
 
 import '../../../../controllers/category/category_controller.dart';
 import '../../../../models/category/category_model.dart';
@@ -54,7 +54,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(size.height * 20),
-          child: const HeaderWidget(hintText: "Search")),
+          child: const BeautifulAppBar(hintText: "Search")),
       body: Row(
         children: [
           //LEFT SiDE DISPLAY CATEGORIES

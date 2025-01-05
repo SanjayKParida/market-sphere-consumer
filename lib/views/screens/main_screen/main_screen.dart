@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     const CategoryScreen(),
     const StoresScreen(),
     const CartScreen(),
-    ProfileScreen()
+    const ProfileScreen()
   ];
 
   @override
@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
         },
         showUnselectedLabels: true,
         unselectedItemColor: Colors.grey,
-        selectedItemColor: const Color(0xff00059F),
+        selectedItemColor: const Color(0xFF3854EE),
         items: const [
           BottomNavigationBarItem(
               icon: Icon(
