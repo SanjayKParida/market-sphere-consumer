@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:market_sphere/controllers/order/order_controller.dart';
 import 'package:market_sphere/provider/cart_provider.dart';
+import 'package:market_sphere/provider/user_provider.dart';
+import 'package:market_sphere/views/screens/shipping_address_screen/shipping_address_screen.dart';
 
 import '../../widgets/checkout_screen_widgets/your_item_widget.dart';
 
@@ -19,6 +22,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cartData = ref.read(cartProvider);
+    final userData = ref.read(userProvider);
+    final OrderController _orderController = OrderController();
+    final _cartProvider = ref.read(cartProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,44 +49,53 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Delivery Address Card
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(13),
-                  leading: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFBF7F5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child:
-                        const Icon(Icons.location_on, color: Color(0xFF3854EE)),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ShippingAddressScreen()),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
-                  title: Text(
-                    "Delivery Address",
-                    style: GoogleFonts.quicksand(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(13),
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBF7F5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.location_on,
+                          color: Color(0xFF3854EE)),
                     ),
-                  ),
-                  subtitle: Text(
-                    "Add your delivery address",
-                    style: GoogleFonts.lato(
-                      color: Colors.grey,
-                      fontSize: 14,
+                    title: Text(
+                      "Delivery Address",
+                      style: GoogleFonts.quicksand(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
+                    subtitle: Text(
+                      "Add your delivery address",
+                      style: GoogleFonts.lato(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 ),
               ),
 
@@ -226,29 +241,72 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           child: SafeArea(
               child: Material(
             color: Colors.transparent,
-            child: InkWell(
-              onTap: () {},
-              child: Container(
-                width: double.infinity,
-                height: 56,
-                decoration: BoxDecoration(
-                    color: const Color(0xFF3854EE),
-                    borderRadius: BorderRadius.circular(12)),
-                child: Center(
-                  child: Text(
-                    selectedPaymentMethod == 'stripe' ||
-                            selectedPaymentMethod == 'upi'
-                        ? "Pay Now"
-                        : "Place Order",
-                    style: GoogleFonts.quicksand(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+            child: userData == null || userData.state == ""
+                ? TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        (MaterialPageRoute(
+                            builder: (context) =>
+                                const ShippingAddressScreen())),
+                      );
+                    },
+                    child: Text(
+                      "Enter Shipping Address",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ))
+                : InkWell(
+                    onTap: () async {
+                      if (selectedPaymentMethod == 'stripe') {
+                        //PAY WITH STRIPE
+                      } else {
+                        await Future.forEach(_cartProvider.getCartItems.entries,
+                            (entry) {
+                          var item = entry.value;
+                          _orderController.uploadOrders(
+                            id: '',
+                            fullName: ref.read(userProvider)!.fullName,
+                            email: ref.read(userProvider)!.email,
+                            state: 'Odisha',
+                            city: 'Cuttack',
+                            locality: 'Kendrapara',
+                            productName: item.productName,
+                            productPrice: item.productPrice,
+                            quantity: item.quantity,
+                            category: item.category,
+                            image: item.images[0],
+                            buyerId: ref.read(userProvider)!.id,
+                            vendorId: item.vendorId,
+                            processing: true,
+                            delivered: false,
+                            context: context,
+                          );
+                        });
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF3854EE),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Center(
+                        child: Text(
+                          selectedPaymentMethod == 'stripe' ||
+                                  selectedPaymentMethod == 'upi'
+                              ? "Pay Now"
+                              : "Place Order",
+                          style: GoogleFonts.quicksand(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           ))),
     );
   }
