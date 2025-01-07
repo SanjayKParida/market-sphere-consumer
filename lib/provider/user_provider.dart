@@ -3,15 +3,7 @@ import 'package:market_sphere/models/user/user_model.dart';
 
 class UserProvider extends StateNotifier<UserModel?> {
   UserProvider()
-      : super(UserModel(
-            id: '',
-            fullName: '',
-            email: '',
-            state: '',
-            city: '',
-            locality: '',
-            password: '',
-            token: ''));
+      : super(null);
 
   UserModel? get user => state;
 

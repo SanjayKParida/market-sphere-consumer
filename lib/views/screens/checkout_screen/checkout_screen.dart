@@ -22,7 +22,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cartData = ref.read(cartProvider);
-    final userData = ref.read(userProvider);
+    final userData = ref.watch(userProvider);
     final OrderController _orderController = OrderController();
     final _cartProvider = ref.read(cartProvider.notifier);
 
@@ -241,7 +241,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           child: SafeArea(
               child: Material(
             color: Colors.transparent,
-            child: userData == null || userData.state == ""
+            child: userData == null
                 ? TextButton(
                     onPressed: () {
                       Navigator.push(

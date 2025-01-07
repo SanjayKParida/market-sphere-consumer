@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:market_sphere/controllers/authentication/auth_controller.dart';
+import 'package:market_sphere/provider/user_provider.dart';
+import 'package:market_sphere/services/snackbar_service.dart';
 
-class ShippingAddressScreen extends StatefulWidget {
+class ShippingAddressScreen extends ConsumerStatefulWidget {
   const ShippingAddressScreen({super.key});
 
   @override
-  State<ShippingAddressScreen> createState() => _ShippingAddressScreenState();
+  _ShippingAddressScreenState createState() => _ShippingAddressScreenState();
 }
 
-class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
+class _ShippingAddressScreenState extends ConsumerState<ShippingAddressScreen> {
+  late String state, city, locality;
+  bool isLoading = false;
+  final AuthController _authController = AuthController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.read(userProvider);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -69,18 +77,27 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                       _buildTextField(
                         label: "State",
                         hint: "Enter your state",
+                        onChanged: (value) {
+                          state = value;
+                        },
                         icon: Icons.location_on_outlined,
                       ),
                       const SizedBox(height: 20),
                       _buildTextField(
                         label: "City",
                         hint: "Enter your city",
+                        onChanged: (value) {
+                          city = value;
+                        },
                         icon: Icons.location_city_outlined,
                       ),
                       const SizedBox(height: 20),
                       _buildTextField(
                         label: "Locality",
                         hint: "Enter your locality",
+                        onChanged: (value) {
+                          locality = value;
+                        },
                         icon: Icons.home_outlined,
                       ),
                     ],
@@ -104,13 +121,26 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+            setState(() {
+              isLoading = true;
+            });
             if (_formKey.currentState!.validate()) {
-              // Handle save
+              await _authController.updateUserAddress(
+                  context: context,
+                  id: user!.id,
+                  state: state,
+                  city: city,
+                  locality: locality);
             }
+            setState(() {
+              isLoading = false;
+            });
+            showSnackbar(context, 'Address updated!');
+            Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF3854EE),
+            backgroundColor: isLoading ? Colors.grey : const Color(0xFF3854EE),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -118,13 +148,22 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
             ),
             elevation: 0,
           ),
-          child: Text(
-            "Save Address",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          child: isLoading
+              ? const SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ))
+              : Text(
+                  "Save Address",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
         ),
       ),
     );
@@ -134,8 +173,10 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    required Function(String) onChanged,
   }) {
     return TextFormField(
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
@@ -152,8 +193,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: const Color(0xFF3854EE), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF3854EE), width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

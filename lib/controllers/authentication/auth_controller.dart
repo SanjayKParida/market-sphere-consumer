@@ -73,6 +73,7 @@ class AuthController {
   Future<void> signInUsers(
       {required BuildContext context,
       required String email,
+      required WidgetRef ref,
       required String password}) async {
     try {
       http.Response response = await http.post(Uri.parse("$URI/api/signin"),
@@ -80,11 +81,32 @@ class AuthController {
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8'
           });
+
       //RESPONSE HANDLING
       manageHttpResponse(
           response: response,
           context: context,
-          onSuccess: () {
+          onSuccess: () async {
+            //GET SHARED PREFERENCES INSTANCE
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            //EXTRACT TOKEN FROM THE RESPONSE
+            String token = json.decode(response.body)['token'];
+            await prefs.setString('auth_token', token);
+
+            //EXTRACT USER DATA FROM RESPONSE AND SAVE IT
+            final userJson = jsonEncode(json.decode(response.body)['user']);
+            ref.read(userProvider.notifier).setUser(userJson);
+
+            //PRINT THE UPDATED USER DATA
+            final updatedUser =
+                ref.read(userProvider); // Read updated user state
+            print('User state after sign-in: $updatedUser');
+
+            //SAVE THE USER DATA IN SHARED PREFERENCES
+            await prefs.setString('user', userJson);
+
+            //NAVIGATE TO MAIN SCREEN
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => MainScreen()),
@@ -117,6 +139,49 @@ class AuthController {
       showSnackbar(context, "Signed Out!");
     } catch (e) {
       showSnackbar(context, "Error Signing Out: $e");
+    }
+  }
+
+  //UPDATE USER'S ADDRESS
+  Future<void> updateUserAddress({
+    required context,
+    required String id,
+    required String state,
+    required String city,
+    required String locality,
+  }) async {
+    try {
+      //MAKE AN HTTP PUT REQUEST TO UPDATE USER'S ADDRESS
+      http.Response response = await http.put(Uri.parse('$URI/api/users/$id'),
+          //ENCODE THE UPDATED DATA AS JSON OBJECT
+          body: jsonEncode({
+            "state": state,
+            "city": city,
+            "locality": locality,
+          }),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8'
+          });
+      manageHttpResponse(
+          response: response,
+          context: context,
+          onSuccess: () async {
+            //DECODE THE UPDATED USER DATA FROM THE RESPONSE BODY
+            //CONVERSION OF JSON STRING RESPONSE INTO DART MAP
+            final updatedUser = jsonDecode(response.body);
+            //ACCESS THE SHARED PREFERENCES FOR LOCAL DATA STORAGE
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            //ENCODE THE UPDATED USER DATA AS JSON STRING
+            final userJson = jsonEncode(updatedUser);
+
+            //UPDATE THE APPLICATION STATE USING RIVERPOD
+            providerContainer.read(userProvider.notifier).setUser(userJson);
+
+            //STORE THE UDPATED USER IN THE SHARED PREFERENCES FOR FUTURE USE
+            await prefs.setString('user', userJson);
+          });
+    } catch (e) {
+      showSnackbar(context, "$e");
     }
   }
 }

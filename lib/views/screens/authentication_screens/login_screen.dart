@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
 import 'package:market_sphere/controllers/authentication/auth_controller.dart';
 import 'package:market_sphere/views/screens/authentication_screens/register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthController _authController = AuthController();
   late String email, password;
   bool isLoading = false;
@@ -23,7 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
     await _authController
-        .signInUsers(context: context, email: email, password: password)
+        .signInUsers(
+            context: context, email: email, password: password, ref: ref)
         .whenComplete(() {
       _formKey.currentState!.reset();
       setState(() {
