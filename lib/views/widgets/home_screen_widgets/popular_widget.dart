@@ -1,65 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:market_sphere/controllers/product/product_controller.dart';
+import 'package:market_sphere/provider/product_provider.dart';
 import 'package:market_sphere/views/widgets/home_screen_widgets/product_item_widget.dart';
-
 import '../../../models/product/product_model.dart';
-import '../text_widget.dart';
 
-class PopularWidget extends StatefulWidget {
+class PopularWidget extends ConsumerStatefulWidget {
   const PopularWidget({super.key});
 
   @override
-  State<PopularWidget> createState() => _PopularWidgetState();
+  ConsumerState<PopularWidget> createState() => _PopularWidgetState();
 }
 
-class _PopularWidgetState extends State<PopularWidget> {
-  //FUTURE THAT WILL HOLD THE POPULAR PRODUCT LIST
-  late Future<List<ProductModel>> futurePopularProdcuts;
-
+class _PopularWidgetState extends ConsumerState<PopularWidget> {
   @override
   void initState() {
     super.initState();
-    futurePopularProdcuts = ProductController().loadPopularProducts();
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    final ProductController productController = ProductController();
+    try {
+      final products = await productController.loadPopularProducts();
+      ref.read(productProvider.notifier).setProducts(products);
+    } catch (e) {
+      print("$e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const TextWidget(title: "Popular Products", subtitle: "View All"),
-        FutureBuilder(
-            future: futurePopularProdcuts,
-            builder: (context, snapshots) {
-              if (snapshots.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshots.hasError) {
-                return Center(
-                  child: Text("Error : ${snapshots.error}"),
-                );
-              } else if (!snapshots.hasData || snapshots.data!.isEmpty) {
-                return const Center(
-                  child: Text("No Popular Products"),
-                );
-              } else {
-                final popularProducts = snapshots.data;
-                return SizedBox(
-                  height: 250,
+    final products = ref.watch(productProvider);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Popular Products",
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Handle view all
+                },
+                child: Text(
+                  "View All",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF2962FF),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+                  height: 280,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: popularProducts!.length,
+                    padding: EdgeInsets.zero,
+                    itemCount: products.length,
                     itemBuilder: (context, index) {
-                      final product = popularProducts[index];
+                      final product = products[index];
                       return ProductItemWidget(
                         product: product,
                       );
                     },
                   ),
-                );
-              }
-            }),
-      ],
+                )
+        ],
+      ),
     );
   }
 }

@@ -26,14 +26,14 @@ class TextWidget extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.quicksand(
-              fontSize: 16,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
             subtitle,
             style: GoogleFonts.quicksand(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.blue,
             ),

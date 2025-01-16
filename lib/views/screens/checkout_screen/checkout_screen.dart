@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconly/iconly.dart';
 import 'package:market_sphere/controllers/order/order_controller.dart';
 import 'package:market_sphere/provider/cart_provider.dart';
 import 'package:market_sphere/provider/user_provider.dart';
@@ -81,20 +82,25 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           color: Color(0xFF3854EE)),
                     ),
                     title: Text(
-                      "Delivery Address",
+                      userData!.state.isNotEmpty
+                          ? userData.state
+                          : "Delivery Address",
                       style: GoogleFonts.quicksand(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     subtitle: Text(
-                      "Add your delivery address",
+                      userData.state.isNotEmpty
+                          ? userData.city
+                          : "Add your delivery address",
                       style: GoogleFonts.lato(
                         color: Colors.grey,
                         fontSize: 14,
                       ),
                     ),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    trailing: const Icon(IconlyLight.edit_square,
+                        color: Color(0xFF3854EE), size: 22),
                   ),
                 ),
               ),

@@ -13,14 +13,28 @@ class ShippingAddressScreen extends ConsumerStatefulWidget {
 }
 
 class _ShippingAddressScreenState extends ConsumerState<ShippingAddressScreen> {
-  late String state, city, locality;
+  late TextEditingController _stateController,
+      _cityController,
+      _localityController;
   bool isLoading = false;
   final AuthController _authController = AuthController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    //READ THE CURRENT USER DATA FROM THE PROVIDER
+    final user = ref.read(userProvider);
+    //INITIALIZE CONTROLLERS WITH CURRENT DATA IF AVAILABLE, IF NOT INITIALIZE WITH EMPTY STRING
+    _stateController = TextEditingController(text: user!.state ?? "");
+    _cityController = TextEditingController(text: user.state ?? "");
+    _localityController = TextEditingController(text: user.state ?? "");
+  }
+
+  @override
   Widget build(BuildContext context) {
     final user = ref.read(userProvider);
+    final updateUser = ref.read(userProvider.notifier);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -75,29 +89,23 @@ class _ShippingAddressScreenState extends ConsumerState<ShippingAddressScreen> {
                       ),
                       const SizedBox(height: 32),
                       _buildTextField(
+                        controller: _stateController,
                         label: "State",
                         hint: "Enter your state",
-                        onChanged: (value) {
-                          state = value;
-                        },
                         icon: Icons.location_on_outlined,
                       ),
                       const SizedBox(height: 20),
                       _buildTextField(
+                        controller: _cityController,
                         label: "City",
                         hint: "Enter your city",
-                        onChanged: (value) {
-                          city = value;
-                        },
                         icon: Icons.location_city_outlined,
                       ),
                       const SizedBox(height: 20),
                       _buildTextField(
+                        controller: _localityController,
                         label: "Locality",
                         hint: "Enter your locality",
-                        onChanged: (value) {
-                          locality = value;
-                        },
                         icon: Icons.home_outlined,
                       ),
                     ],
@@ -126,12 +134,20 @@ class _ShippingAddressScreenState extends ConsumerState<ShippingAddressScreen> {
               isLoading = true;
             });
             if (_formKey.currentState!.validate()) {
-              await _authController.updateUserAddress(
-                  context: context,
-                  id: user!.id,
-                  state: state,
-                  city: city,
-                  locality: locality);
+              await _authController
+                  .updateUserAddress(
+                      context: context,
+                      id: user!.id,
+                      state: _stateController.text,
+                      city: _cityController.text,
+                      locality: _localityController.text)
+                  .whenComplete(() {
+                updateUser.recreateUserState(
+                  state: _stateController.text,
+                  city: _cityController.text,
+                  locality: _localityController.text,
+                );
+              });
             }
             setState(() {
               isLoading = false;
@@ -169,14 +185,13 @@ class _ShippingAddressScreenState extends ConsumerState<ShippingAddressScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    required IconData icon,
-    required Function(String) onChanged,
-  }) {
+  Widget _buildTextField(
+      {required String label,
+      required String hint,
+      required IconData icon,
+      required TextEditingController controller}) {
     return TextFormField(
-      onChanged: onChanged,
+      controller: controller,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,

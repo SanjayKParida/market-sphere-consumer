@@ -19,7 +19,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _cartProvider = ref.read(cartProvider.notifier);
+    final cartProviderData = ref.read(cartProvider.notifier);
+    final cartData = ref.watch(cartProvider);
+    final isInCart = cartData.containsKey(widget.product.id);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -181,29 +183,31 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         width: double.infinity,
         height: 65,
         child: ElevatedButton(
-          onPressed: () {
-            _cartProvider.addProductToCart(
-                productName: widget.product.productName,
-                productPrice: widget.product.productPrice,
-                category: widget.product.category,
-                images: widget.product.images,
-                vendorId: widget.product.vendorId,
-                productQuantity: widget.product.quantity,
-                quantity: widget.product.quantity,
-                productId: widget.product.id,
-                description: widget.product.description,
-                fullName: widget.product.fullName);
-            showSnackbar(context, '${widget.product.productName} added!');
-          },
+          onPressed: isInCart
+              ? null
+              : () {
+                  cartProviderData.addProductToCart(
+                      productName: widget.product.productName,
+                      productPrice: widget.product.productPrice,
+                      category: widget.product.category,
+                      images: widget.product.images,
+                      vendorId: widget.product.vendorId,
+                      productQuantity: widget.product.quantity,
+                      quantity: widget.product.quantity,
+                      productId: widget.product.id,
+                      description: widget.product.description,
+                      fullName: widget.product.fullName);
+                  showSnackbar(context, '${widget.product.productName} added!');
+                },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
+            backgroundColor: isInCart ? Colors.grey.shade800 : Colors.blue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
             elevation: 0,
           ),
           child: Text(
-            "Add to Cart",
+            isInCart ? "Already in your cart" : "Add to Cart",
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.bold,
